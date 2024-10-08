@@ -20,11 +20,11 @@
         <token.security.version>1.0.1</token.security.version>
 
         <!-- Project properties  -->
-        <!--  token    -->
+        <!--  Token Security    -->
         <secret.key>841D8A6C80CBA4FCAD32D5367C18C53B</secret.key>
         <issuer>cphbusiness.dat</issuer>
         <token.expiration.time>3600000</token.expiration.time>
-        <!--  DB    -->
+        <!--  Database    -->
         <db.name>startcode</db.name>
         <db.username>postgres</db.username>
         <db.password>postgres</db.password>
@@ -41,65 +41,67 @@
     </repositories>
 
     <dependencies>
-
+        <!-- Token Security -->
         <dependency>
             <groupId>com.github.Hartmannsolution</groupId>
             <artifactId>TokenSecurity</artifactId>
             <version>${token.security.version}</version>
         </dependency>
 
+        <!-- BCrypt for Password Hashing -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>${jbcrypt.version}</version>
         </dependency>
 
-        <!--   R.E.S.T     -->
+        <!-- Javalin REST Framework -->
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin-bundle</artifactId>
             <version>6.1.3</version>
         </dependency>
+
+        <!-- Jackson for JSON Handling -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.17.0</version>
         </dependency>
 
-        <!--  Utilities      -->
+        <!-- Lombok for Boilerplate Code -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
             <scope>provided</scope>
         </dependency>
-        <!--  DB    -->
 
+        <!-- PostgreSQL Database -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.4</version>
         </dependency>
+
+        <!-- Hibernate ORM and HikariCP for Connection Pooling -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate-version}</version>
         </dependency>
         <dependency>
-            <!--   Hibernate Connection Pool      -->
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.0.1</version>
         </dependency>
         <dependency>
-            <!--   Hibernate Connection Pool      -->
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-hikaricp</artifactId>
             <version>${hibernate-version}</version>
         </dependency>
 
-        <!--  Logging   -->
-
+        <!-- Logging with SLF4J and Logback -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -116,8 +118,7 @@
             <version>2.0.16</version>
         </dependency>
 
-        <!--  TESTING      -->
-
+        <!-- JUnit and Testing Libraries -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -142,6 +143,8 @@
             <version>3.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Testcontainers for Integration Testing with PostgreSQL -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
@@ -158,6 +161,7 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>jdbc</artifactId>
             <version>${testcontainers.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -165,6 +169,8 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Rest-Assured for API Testing -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -178,37 +184,55 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <finalName>app</finalName> <!-- This is the name of the jar file -->
         <plugins>
-
-            <!--  Pom.xml properties plugin  -->
-
-            <plugin>
-                <!--  https://www.baeldung.com/java-accessing-maven-properties  -->
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>write-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <outputFile>${project.build.outputDirectory}/properties-from-pom.properties</outputFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!--   Surefire plugin (Testing)  -->
-
+            <!-- Maven Shade Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0</version>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>dat.Main</mainClass> <!-- Update this with your main class -->
+                        </transformer>
+                    </transformers>
+
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/services/org.eclipse.jetty.http.HttpFieldPreEncoder</exclude>
+                                <exclude>logback.xml</exclude>
+                                <exclude>META-INF/services/org.eclipse.jetty.webapp.Configuration</exclude>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                                <exclude>META-INF/LICENSE.md</exclude>
+                                <exclude>META-INF/okio.kotlin_module</exclude>
+                                <exclude>META-INF/NOTICE.md</exclude>
+                                <exclude>META-INF/NOTICE</exclude>
+                                <exclude>META-INF.versions.9.module-info</exclude>
+                                <exclude>META-INF/services/com.fasterxml.jackson.databind.Module</exclude>
+                                <exclude>META-INF/LICENSE</exclude>
+                                <exclude>META-INF/LICENSE.txt</exclude>
+                                <exclude>META-INF/NOTICE.txt</exclude>
+                                <exclude>META-INF/services/jakarta.servlet.ServletContainerInitializer</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

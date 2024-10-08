@@ -1,0 +1,13 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  app:
+    image: cphmk/hotelapi:latest
+    environment:
+      - DEPLOYED=true
+      - CONNECTION_STR=${CONNECTION_STR}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "7070:7070"
+    restart: unless-stopped
